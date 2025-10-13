@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('pre_get_posts', [&$this, 'action_parse_query']);
+		add_filter('woocommerce_my_account_my_orders_query', [&$this, 'action_parse_query']);
 
 	}
 	
@@ -198,18 +198,13 @@ class wdo_Backend {
 	/**
 	 * Modify WooCommerce admin order list query.
 	 */
-	public function action_parse_query($query) {
+	public function action_parse_query($args) {
 
+		$statuses = wc_get_order_statuses();
+		unset( $statuses['wc-on-hold', 'wc-senttosr'] ); // wc-completed, wc-processing, etc.
+		$args['status'] = array_keys( $statuses );
+		return $args;
 
-		if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
-			=== 
-			( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]/wp-admin/admin.php?page=wc-orders") {
-
-
-			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-			$query->set('orderby', 'date');
-			$query->set('order', 'ASC');
-		}
 		
 
 		// if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
