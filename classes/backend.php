@@ -200,9 +200,8 @@ class wdo_Backend {
 	 */
 	public function action_parse_query($query) {
 		// Ensure this is the main query and for the WooCommerce orders page
-		//if ( ! is_admin() || ! $query->is_main_query() ) return;
-
-
+		if ( ! is_admin() ) return;
+		
 		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
