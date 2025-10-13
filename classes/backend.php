@@ -201,7 +201,7 @@ class wdo_Backend {
 	public function action_parse_query($args) {
 
 		$statuses = wc_get_order_statuses();
-		unset( $statuses['wc-on-hold', 'wc-senttosr'] ); // wc-completed, wc-processing, etc.
+		unset( $statuses['wc-senttosr']); // wc-completed, wc-processing, etc.
 		$args['status'] = array_keys( $statuses );
 		return $args;
 
