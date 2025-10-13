@@ -10,6 +10,7 @@
 class wdo_Backend {
 	private $plugin;
 	private $settings;
+	private $isOrderPage = false;
 	private $isSettingsPage = false;
 	
 	private $pages = [];
@@ -32,12 +33,13 @@ class wdo_Backend {
 
 			if ( $screen->id === 'woocommerce_page_wc-orders' ) {
 				$this->plugin->debug('[action_parse_query] Function triggered.');
+				$isOrderPage = true;
 
 				// You're on the WooCommerce Orders admin page
 				// You can now hook into parse_query or modify filters
 			} else {
 				$this->plugin->debug('[action_parse_query] bypass triggered.');
-
+				$isOrderPage = false;
 			}
 		});
 		
@@ -217,17 +219,9 @@ class wdo_Backend {
 	 */
 	public function action_parse_query($query) {
 		// Ensure this is the main query and for the WooCommerce orders page
-		if ( ! is_admin() ) return;
+		if ( ! is_admin() || ! $this->is_order_screen ) return;
 
-		// Debug log to verify the function is triggered
-		$this->plugin->debug('[action_parse_query] Function triggered.');
-
-		global $pagenow;
-		if ( $pagenow === 'edit.php' && $query->get('post_type') === 'shop_order' ) {
-			$this->plugin->debug('[action_parse_query] Function triggered.');
-			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
-		}
-	
+		$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
 	
 	
 	
