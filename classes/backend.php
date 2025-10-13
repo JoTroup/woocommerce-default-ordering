@@ -212,7 +212,7 @@ class wdo_Backend {
 
 		// Check if conditions are met for WooCommerce orders page
 
-		$this->plugin->debug('[action_parse_query] is_admin'. ! is_admin() . 'is_main_query' . ! $query->is_main_query());
+		$this->plugin->debug('[action_parse_query] is_admin(): ' . var_export(is_admin(), true) . ' is_main_query ' . ! $query->is_main_query());
 
 		if ( ! is_admin() || ! $query->is_main_query() ) return;
 
