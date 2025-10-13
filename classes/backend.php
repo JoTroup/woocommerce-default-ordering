@@ -211,26 +211,34 @@ class wdo_Backend {
 
 		// Check if conditions are met for WooCommerce orders page
 
-		if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" === 'https://bites.barossafresh.com.au/wp-admin/admin.php?page=wc-orders' ) {
-			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-
-			// Get the 'orderby' value from plugin settings
-			$options = get_option($this->plugin->setPrefix("options"), []); // Retrieve all plugin options
-			$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date'; // Default to 'date' if not set
-
-			// Set order by the retrieved value in ascending order
-			$query->set('orderby', $orderby);
-			$query->set('order', 'ASC');
-
-			// Exclude selected statuses
-			$excluded_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : []; // Ensure it's always an array
-			if (!empty($excluded_statuses)) {
-				$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
-			}
-
-			// Debug log to confirm query modification
-			$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
+		if ( is_admin() && $query->is_main_query() && $query->get('post_type') === 'shop_order' ) {
+			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
 		}
+		
+		
+
+		// if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
+		// 	=== 
+		// 	( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER/wp-admin/admin.php?page=wc-orders") {
+		// 	$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
+
+		// 	// Get the 'orderby' value from plugin settings
+		// 	$options = get_option($this->plugin->setPrefix("options"), []); // Retrieve all plugin options
+		// 	$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date'; // Default to 'date' if not set
+
+		// 	// Set order by the retrieved value in ascending order
+		// 	$query->set('orderby', $orderby);
+		// 	$query->set('order', 'ASC');
+
+		// 	// Exclude selected statuses
+		// 	$excluded_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : []; // Ensure it's always an array
+		// 	if (!empty($excluded_statuses)) {
+		// 		$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
+		// 	}
+
+		// 	// Debug log to confirm query modification
+		// 	$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
+		// }
 		
 		
 		// if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] === 'shop_order') {
