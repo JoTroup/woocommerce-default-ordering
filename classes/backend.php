@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
+		add_action('pre_get_posts', [&$this, 'action_parse_query'], 10, 1);
 
 	}
 	
@@ -212,7 +212,7 @@ class wdo_Backend {
 
 		// Check if conditions are met for WooCommerce orders page
 
-		$this->plugin->debug('[action_parse_query] is_admin(): ' . var_export(is_admin(), true) . ' is_main_query ' . ! $query->is_main_query());
+		$this->plugin->debug('[action_parse_query] is_admin(): ' . var_export(is_admin(), true) . ' is_main_query ' . $query->is_main_query());
 
 		if (! $query->is_main_query() ) return;
 
