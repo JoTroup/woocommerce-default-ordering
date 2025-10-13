@@ -176,7 +176,5 @@ class wdo_Backend {
 			$this->plugin->debug('[action_parse_query] Conditions not met. Query not modified.');
 		}
 	}
-
-	add_action( 'parse_query', 'action_parse_query', 10, 1 );
 	
 }
