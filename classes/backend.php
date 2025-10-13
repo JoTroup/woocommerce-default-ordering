@@ -24,7 +24,11 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 		// Hook into parse_query to modify WooCommerce admin order list
-		add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
+		add_action( 'plugins_loaded', function() {
+			add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
+		});
+
+
 	}
 	
 	public function wpdocs_this_screen() {
@@ -211,12 +215,14 @@ class wdo_Backend {
 
 		// Check if conditions are met for WooCommerce orders page
 
-		if ( is_admin() && $query->is_main_query() && $query->get('post_type') === 'shop_order' ) {
+		if ( ! is_admin() || ! $query->is_main_query() ) return;
+        if ( $pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order' ) return;
 
-			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
-		}
-		
+        if ( current_user_can('shop_manager') ) {
+            $query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
+        }
+
+
 		
 
 		// if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
