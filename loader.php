@@ -3,7 +3,7 @@
  * Plugin Name:       WooCommerce Default Ordering
  * Plugin URI:        
  * Description:       
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Josiah
  * Author URI:        
  * Text Domain:       wdo
@@ -24,7 +24,7 @@ if(!function_exists('wp_get_current_user')) {
 class wdo_Loader {
 	public $config = [
 		'name' => 'WooCommerce Default Ordering',
-		'version' => '1.0.4',
+		'version' => '1.0.5',
 		'textDomain' => 'wdo',
 		'textDomainPath' => 'languages',
 		'slug' => 'woocommerce-default-ordering',

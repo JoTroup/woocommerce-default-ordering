@@ -127,28 +127,29 @@ class wdo_Backend {
 			$menu1_section1
 		);
 
+		// Add a field for the 'admin_filterStatus' setting
 		add_settings_field(
 			$this->plugin->setPrefix("admin_filterStatus"),
-				__("Exclude Order Statuses", $this->plugin->config["textDomain"]),
-				function() {
-					$options = get_option($this->plugin->setPrefix("options"), []);
-					$selected_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : [];
-					$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
-	
-					?>
-					<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus][]" id="admin_filterStatus" multiple style="width: 100%; height: auto;">
-						<?php foreach ($statuses as $status_key => $status_label): ?>
-							<option value="<?php echo esc_attr($status_key); ?>" <?php echo in_array($status_key, $selected_statuses) ? 'selected' : ''; ?>>
-								<?php echo esc_html($status_label); ?>
-							</option>
-						<?php endforeach; ?>
-					</select>
-					<p class="description"><?php esc_html_e('Select the order statuses to exclude from the WooCommerce order view.', $this->plugin->config["textDomain"]); ?></p>
-					<?php
-				},
-				$woo_default_order,
-				$menu1_section1
-			);
+			__("Exclude Order Statuses", $this->plugin->config["textDomain"]),
+			function() {
+				$options = get_option($this->plugin->setPrefix("options"), []);
+				$selected_statuses = isset($options['admin_filterStatus']) ? (array) $options['admin_filterStatus'] : [];
+				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
+
+				?>
+				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus][]" id="admin_filterStatus" multiple style="width: 100%; height: auto;">
+					<?php foreach ($statuses as $status_key => $status_label): ?>
+						<option value="<?php echo esc_attr($status_key); ?>" <?php echo in_array($status_key, $selected_statuses) ? 'selected' : ''; ?>>
+							<?php echo esc_html($status_label); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+				<p class="description"><?php esc_html_e('Select the order statuses to exclude from the WooCommerce order view.', $this->plugin->config["textDomain"]); ?></p>
+				<?php
+			},
+			$woo_default_order,
+			$menu1_section1
+		);
 
 		// Register the settings
 		register_setting(
