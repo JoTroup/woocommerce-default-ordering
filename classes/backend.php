@@ -215,7 +215,8 @@ class wdo_Backend {
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
 
 			// Get the 'orderby' value from plugin settings
-			$orderby = $this->plugin->getOption('admin_orderby'); // Default to 'date' if not set
+			$options = get_option($this->plugin->setPrefix("options"), []); // Retrieve all plugin options
+			$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date'; // Default to 'date' if not set
 
 			// Set order by the retrieved value in ascending order
 			$query->set('orderby', $orderby);
