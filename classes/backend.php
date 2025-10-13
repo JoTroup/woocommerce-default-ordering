@@ -212,6 +212,8 @@ class wdo_Backend {
 		// Check if conditions are met for WooCommerce orders page
 
 		if ( is_admin() && $query->is_main_query() && $query->get('post_type') === 'shop_order' ) {
+
+			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
 			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
 		}
 		
