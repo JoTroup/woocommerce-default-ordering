@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('parse_query', [&$this, 'action_parse_query'], 1);
+		add_action('parse_query', [&$this, 'action_parse_query'], 10);
 
 	}
 	
@@ -201,7 +201,7 @@ class wdo_Backend {
 	public function action_parse_query($query) {
 		// Ensure this is the main query and for the WooCommerce orders page
 		if ( ! is_admin() ) return;
-		
+
 		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
