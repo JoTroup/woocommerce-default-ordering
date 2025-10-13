@@ -33,13 +33,13 @@ class wdo_Backend {
 
 			if ( $screen->id === 'woocommerce_page_wc-orders' ) {
 				$this->plugin->debug('[action_parse_query] Function triggered.');
-				$isOrderPage = true;
+				$this->isOrderPage = true;
 
 				// You're on the WooCommerce Orders admin page
 				// You can now hook into parse_query or modify filters
 			} else {
 				$this->plugin->debug('[action_parse_query] bypass triggered.');
-				$isOrderPage = false;
+				$this->isOrderPage = false;
 			}
 		});
 		
