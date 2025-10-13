@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_filter('woocommerce_my_account_my_orders_query', [&$this, 'action_parse_query'], 9999);
+		add_filter('pre_get_posts', [&$this, 'action_parse_query'], 9999);
 
 	}
 	
