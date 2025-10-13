@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_filter('pre_get_posts', [&$this, 'action_parse_query'], 9999);
+		add_action('pre_get_posts', [&$this, 'action_parse_query']);
 
 	}
 	
@@ -198,66 +198,39 @@ class wdo_Backend {
 	/**
 	 * Modify WooCommerce admin order list query.
 	 */
-	public function action_parse_query($args) {
+	public function action_parse_query($query) {
+		// Ensure this is the main query and for the WooCommerce orders page
+		if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'shop_order') {
+			return;
+		}
 
+		// Debug log to verify the function is triggered
+		$this->plugin->debug('[action_parse_query] Function triggered.');
+
+		// Get all WooCommerce order statuses
 		$statuses = wc_get_order_statuses();
 
-		$this->plugin->debug('[action_parse_query] Original Args: ' . print_r($args, true));
+		// Debug log for statuses
 		$this->plugin->debug('[action_parse_query] Statuses: ' . print_r($statuses, true));
 
+		// Exclude specific statuses
+		$excluded_statuses = (array) $this->plugin->getOption('admin_filterStatus', []); // Ensure it's always an array
+		if (!empty($excluded_statuses)) {
+			$query->set('post_status', array_diff(array_keys($statuses), $excluded_statuses));
+		}
 
-		unset( $statuses['wc-senttosr']); // wc-completed, wc-processing, etc.
-		$args['status'] = array_keys( $statuses );
-		return $args;
+		// Get the 'orderby' value from plugin settings
+		$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
+		if ($orderby === 'custom') {
+			$orderby = $this->plugin->getOption('admin_orderby_custom', 'date'); // Use custom value if set
+		}
 
-		
+		// Set order by the retrieved value in ascending order
+		$query->set('orderby', $orderby);
+		$query->set('order', 'ASC');
 
-		// if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
-		// 	=== 
-		// 	( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER/wp-admin/admin.php?page=wc-orders") {
-		// 	$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-
-		// 	// Get the 'orderby' value from plugin settings
-		// 	$options = get_option($this->plugin->setPrefix("options"), []); // Retrieve all plugin options
-		// 	$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date'; // Default to 'date' if not set
-
-		// 	// Set order by the retrieved value in ascending order
-		// 	$query->set('orderby', $orderby);
-		// 	$query->set('order', 'ASC');
-
-		// 	// Exclude selected statuses
-		// 	$excluded_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : []; // Ensure it's always an array
-		// 	if (!empty($excluded_statuses)) {
-		// 		$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
-		// 	}
-
-		// 	// Debug log to confirm query modification
-		// 	$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
-		// }
-		
-		
-		// if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] === 'shop_order') {
-		// 	$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-
-		// 	// Get the 'orderby' value from plugin settings
-		// 	$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
-
-		// 	// Set order by the retrieved value in ascending order
-		// 	$query->set('orderby', $orderby);
-		// 	$query->set('order', 'ASC');
-
-		// 		// Exclude selected statuses
-		// 		$excluded_statuses = $this->plugin->getOption('admin_filterStatus', []);
-		// 		if (!empty($excluded_statuses)) {
-		// 			$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
-		// 		}
-
-		// 	// Debug log to confirm query modification
-		// 	$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
-		// } else {
-		// 	// Debug log if conditions are not met
-		// 	$this->plugin->debug('[action_parse_query] Conditions not met. Query not modified.');
-		// }
+		// Debug log to confirm query modification
+		$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
 	}
 
 	/**
