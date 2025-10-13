@@ -204,12 +204,14 @@ class wdo_Backend {
 
 		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
-
-		$screen = get_current_screen();
-		if ( $screen && $screen->id === 'edit-shop_order' ) {
-			// Your logic here
+		
+		global $pagenow;
+		if ( $pagenow === 'edit.php' && $query->get('post_type') === 'shop_order' ) {
+			$this->plugin->debug('[action_parse_query] Function triggered.');
 			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
 		}
+	
+	
 	
 	
 
