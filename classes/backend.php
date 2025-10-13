@@ -152,17 +152,28 @@ class wdo_Backend {
 	public function action_parse_query($query) {
 		global $pagenow;
 
+		 // Debug log to verify the function is triggered
+		$this->plugin->debug('[action_parse_query] Function triggered.');
+
 		// Initialize
 		$query_vars = &$query->query_vars;
 
-		// Only on WooCommerce admin order list
-		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && $query_vars['post_type'] == 'shop_order') {
-			 // Get the 'orderby' value from plugin settings
+		// Check if conditions are met
+		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] == 'shop_order') {
+			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
+
+			// Get the 'orderby' value from plugin settings
 			$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
 
 			// Set order by the retrieved value in ascending order
 			$query->set('orderby', $orderby);
 			$query->set('order', 'ASC');
+
+			// Debug log to confirm query modification
+			$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC');
+		} else {
+			// Debug log if conditions are not met
+			$this->plugin->debug('[action_parse_query] Conditions not met. Query not modified.');
 		}
 	}
 	
