@@ -201,6 +201,11 @@ class wdo_Backend {
 	public function action_parse_query($args) {
 
 		$statuses = wc_get_order_statuses();
+
+		$this->plugin->debug('[action_parse_query] Original Args: ' . print_r($args, true));
+		$this->plugin->debug('[action_parse_query] Statuses: ' . print_r($statuses, true));
+
+
 		unset( $statuses['wc-senttosr']); // wc-completed, wc-processing, etc.
 		$args['status'] = array_keys( $statuses );
 		return $args;
