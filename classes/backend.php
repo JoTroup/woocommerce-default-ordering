@@ -93,7 +93,8 @@ class wdo_Backend {
 			__("Admin Order By", $this->plugin->config["textDomain"]),
 			function() {
 				// Get the current value or default to 'date'
-				$value = $this->plugin->getOption('admin_orderby', 'date');
+				$options = get_option($this->plugin->setPrefix("options"), []);
+				$value = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date';
 				?>
 				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby]">
 					<option value="date" <?php selected($value, 'date'); ?>><?php esc_html_e('Date', $this->plugin->config["textDomain"]); ?></option>
@@ -110,7 +111,7 @@ class wdo_Backend {
 		// Register the settings
 		register_setting(
 			$this->plugin->setPrefix("options"),
-			$this->plugin->setPrefix("options") // Add the option name here
+			$this->plugin->setPrefix("options") // Ensure the correct option key is registered
 		);
 	}
 	/**
