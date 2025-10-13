@@ -22,6 +22,9 @@ class wdo_Backend {
 		add_action('admin_init', [&$this, 'register_settings']);
 		
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
+
+		// Hook into parse_query to modify WooCommerce admin order list
+		add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
 	}
 	
 	public function wpdocs_this_screen() {
@@ -72,28 +75,43 @@ class wdo_Backend {
 		$this->settings = (array)$this->plugin->getOption('fields'); 
 		
 		$woo_default_order = $this->plugin->setPrefix("woo-default-order");
-		/**
-		 * Add a section for the settings page
-		 * https://developer.wordpress.org/reference/functions/add_settings_section/
-		 *
-		 * Arguments:
-		 * 1. id
-		 * 2. title
-		 * 3. callback
-		 * 4. page custom (e.g. slug defined in custom menu) or existing wp page (e.g. reading --> Settings/Reading page)
-		 */
-		$menu1_section1 = $this->plugin->setPrefix("menu1_section1");
+		$menu1_section1 = $this->plugin->setPrefix("wdo_section1");
+
+		// Add a section for the settings page
 		add_settings_section(
 			$menu1_section1,
-			__("Block 1", $this->plugin->config["textDomain"]),
+			__("WooCommerce Default Ordering", $this->plugin->config["textDomain"]),
 			function() {
-				esc_html_e("Sample description for this block.", $this->plugin->config["textDomain"]);
+				esc_html_e("Configure the default ordering for WooCommerce admin order list.", $this->plugin->config["textDomain"]);
 			},
-//			[&$this, "render_menu1_section1"],
 			$woo_default_order
 		);
 
+		// Add a field for the 'admin_orderby' setting
+		add_settings_field(
+			$this->plugin->setPrefix("admin_orderby"),
+			__("Admin Order By", $this->plugin->config["textDomain"]),
+			function() {
+				// Get the current value or default to 'date'
+				$value = $this->plugin->getOption('admin_orderby', 'date');
+				?>
+				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby]">
+					<option value="date" <?php selected($value, 'date'); ?>><?php esc_html_e('Date', $this->plugin->config["textDomain"]); ?></option>
+					<option value="title" <?php selected($value, 'title'); ?>><?php esc_html_e('Title', $this->plugin->config["textDomain"]); ?></option>
+					<option value="ID" <?php selected($value, 'ID'); ?>><?php esc_html_e('ID', $this->plugin->config["textDomain"]); ?></option>
+					<option value="modified" <?php selected($value, 'modified'); ?>><?php esc_html_e('Last Modified', $this->plugin->config["textDomain"]); ?></option>
+				</select>
+				<?php
+			},
+			$woo_default_order,
+			$menu1_section1
+		);
 
+		// Register the settings
+		register_setting(
+			$this->plugin->setPrefix("options"),
+			$this->plugin->setPrefix("options") // Add the option name here
+		);
 	}
 	/**
 	 * Display the settings page for the menu(s) that have created.
@@ -127,5 +145,24 @@ class wdo_Backend {
 		esc_html_e("Section content", $this->plugin->config["textDomain"]); 
 	}
 
+	/**
+	 * Modify WooCommerce admin order list query.
+	 */
+	public function action_parse_query($query) {
+		global $pagenow;
+
+		// Initialize
+		$query_vars = &$query->query_vars;
+
+		// Only on WooCommerce admin order list
+		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && $query_vars['post_type'] == 'shop_order') {
+			 // Get the 'orderby' value from plugin settings
+			$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
+
+			// Set order by the retrieved value in ascending order
+			$query->set('orderby', $orderby);
+			$query->set('order', 'ASC');
+		}
+	}
 	
 }
