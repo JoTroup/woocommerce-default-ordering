@@ -203,7 +203,7 @@ class wdo_Backend {
 
 		if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
 			=== 
-			( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER/wp-admin/admin.php?page=wc-orders") {
+			( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]/wp-admin/admin.php?page=wc-orders") {
 
 
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
