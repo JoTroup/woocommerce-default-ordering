@@ -154,7 +154,12 @@ class wdo_Backend {
 		// Register the settings
 		register_setting(
 			$this->plugin->setPrefix("options"),
-			$this->plugin->setPrefix("options") // Ensure the correct option key is registered
+			$this->plugin->setPrefix("options"), // Ensure the correct option key is registered
+			[
+				'default' => [
+					'admin_orderby' => 'date', // Set default value for admin_orderby
+				],
+			]
 		);
 	}
 	/**
@@ -210,7 +215,7 @@ class wdo_Backend {
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
 
 			// Get the 'orderby' value from plugin settings
-			$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
+			$orderby = $this->plugin->getOption('admin_orderby'); // Default to 'date' if not set
 
 			// Set order by the retrieved value in ascending order
 			$query->set('orderby', $orderby);
