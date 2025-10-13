@@ -23,11 +23,8 @@ class wdo_Backend {
 		
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
-		// Hook into parse_query to modify WooCommerce admin order list
-		add_action( 'plugins_loaded', function() {
-			add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
-		});
 
+		add_action('parse_query', [&$this, 'action_parse_query'], 10, 1);
 
 	}
 	
