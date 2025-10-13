@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('pre_get_posts', [&$this, 'action_parse_query']);
+		add_action('pre_get_posts', [&$this, 'action_parse_query'], 1);
 
 	}
 	
