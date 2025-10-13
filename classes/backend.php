@@ -199,7 +199,6 @@ class wdo_Backend {
 	 * Modify WooCommerce admin order list query.
 	 */
 	public function action_parse_query($query) {
-		if (!is_admin() || !$query->is_main_query()) return;
 
 		global $pagenow;
 		if ($pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order') return;
