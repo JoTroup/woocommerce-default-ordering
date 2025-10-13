@@ -207,7 +207,8 @@ class wdo_Backend {
 
 
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
-			$query->set('post_status', ['wc-processing', 'wc-completed']);
+			$query->set('orderby', 'date');
+			$query->set('order', 'ASC');
 		}
 		
 
