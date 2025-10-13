@@ -200,13 +200,15 @@ class wdo_Backend {
 	 */
 	public function action_parse_query($query) {
 
-		global $pagenow;
-		if ($pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order') return;
-	
-		$this->plugin->debug('[action_pre_get_posts] is_admin and is_main_query passed.');
 
-		$query->set('post_status', ['wc-processing', 'wc-completed']);
+		if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
+			=== 
+			( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER/wp-admin/admin.php?page=wc-orders") {
 
+
+			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
+			$query->set('post_status', ['wc-processing', 'wc-completed']);
+		}
 		
 
 		// if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" 
