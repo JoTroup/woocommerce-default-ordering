@@ -24,7 +24,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('pre_get_posts', [&$this, 'action_parse_query'], 1);
+		add_action('parse_query', [&$this, 'action_parse_query'], 1);
 
 	}
 	
@@ -200,37 +200,44 @@ class wdo_Backend {
 	 */
 	public function action_parse_query($query) {
 		// Ensure this is the main query and for the WooCommerce orders page
-		if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'shop_order') {
-			return;
-		}
+		if ( ! is_admin() || ! $query->is_main_query() ) return;
+
 
 		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
-		// Get all WooCommerce order statuses
-		$statuses = wc_get_order_statuses();
-
-		// Debug log for statuses
-		$this->plugin->debug('[action_parse_query] Statuses: ' . print_r($statuses, true));
-
-		// Exclude specific statuses
-		$excluded_statuses = (array) $this->plugin->getOption('admin_filterStatus', []); // Ensure it's always an array
-		if (!empty($excluded_statuses)) {
-			$query->set('post_status', array_diff(array_keys($statuses), $excluded_statuses));
+		$screen = get_current_screen();
+		if ( $screen && $screen->id === 'edit-shop_order' ) {
+			// Your logic here
+			$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
 		}
+	
+	
 
-		// Get the 'orderby' value from plugin settings
-		$orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
-		if ($orderby === 'custom') {
-			$orderby = $this->plugin->getOption('admin_orderby_custom', 'date'); // Use custom value if set
-		}
+		// // Get all WooCommerce order statuses
+		// $statuses = wc_get_order_statuses();
 
-		// Set order by the retrieved value in ascending order
-		$query->set('orderby', $orderby);
-		$query->set('order', 'ASC');
+		// // Debug log for statuses
+		// $this->plugin->debug('[action_parse_query] Statuses: ' . print_r($statuses, true));
 
-		// Debug log to confirm query modification
-		$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
+		// // Exclude specific statuses
+		// $excluded_statuses = (array) $this->plugin->getOption('admin_filterStatus', []); // Ensure it's always an array
+		// if (!empty($excluded_statuses)) {
+		// 	$query->set('post_status', array_diff(array_keys($statuses), $excluded_statuses));
+		// }
+
+		// // Get the 'orderby' value from plugin settings
+		// $orderby = $this->plugin->getOption('admin_orderby', 'date'); // Default to 'date' if not set
+		// if ($orderby === 'custom') {
+		// 	$orderby = $this->plugin->getOption('admin_orderby_custom', 'date'); // Use custom value if set
+		// }
+
+		// // Set order by the retrieved value in ascending order
+		// $query->set('orderby', $orderby);
+		// $query->set('order', 'ASC');
+
+		// // Debug log to confirm query modification
+		// $this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
 	}
 
 	/**
