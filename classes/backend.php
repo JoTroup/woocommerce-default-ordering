@@ -223,7 +223,7 @@ class wdo_Backend {
 			$query->set('order', 'ASC');
 
 			// Exclude selected statuses
-			$excluded_statuses = (array) $this->plugin->getOption('admin_filterStatus', []); // Ensure it's always an array
+			$excluded_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : []; // Ensure it's always an array
 			if (!empty($excluded_statuses)) {
 				$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
 			}
