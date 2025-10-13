@@ -213,10 +213,18 @@ class wdo_Backend {
 		// Check if conditions are met for WooCommerce orders page
 
 		if ( ! is_admin() || ! $query->is_main_query() ) return;
+
+		$this->plugin->debug('[action_parse_query] is_admin and is_main_query passed.');
+
         if ( $pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order' ) return;
 
+		$this->plugin->debug('[action_parse_query] pagenow and post_type passed.');
+
+
+		$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
+		
         if ( current_user_can('shop_manager') ) {
-            $query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
+            
         }
 
 
