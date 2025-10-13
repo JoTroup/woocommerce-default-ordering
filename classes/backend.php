@@ -32,6 +32,9 @@ class wdo_Backend {
 
 				// You're on the WooCommerce Orders admin page
 				// You can now hook into parse_query or modify filters
+			} else {
+				$this->plugin->debug('[action_parse_query] bypass triggered.');
+
 			}
 		});
 		
