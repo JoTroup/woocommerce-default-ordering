@@ -25,7 +25,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		//add_action('parse_query', [&$this, 'action_parse_query'], 10);
+		add_action('parse_query', [&$this, 'action_parse_query'], 10);
 
 		add_action( 'current_screen', function( $screen ) {
 
