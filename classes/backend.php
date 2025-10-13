@@ -205,6 +205,12 @@ class wdo_Backend {
 		$this->plugin->debug('[action_parse_query] '. $pagenow . '--' . $query_vars['post_type']);
 
 		// Check if conditions are met for WooCommerce orders page
+
+		if ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" === 'https://bites.barossafresh.com.au/wp-admin/admin.php?page=wc-orders' ) {
+			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
+		}
+		
+		
 		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] === 'shop_order') {
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
 
