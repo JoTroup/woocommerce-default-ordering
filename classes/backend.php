@@ -24,7 +24,18 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('parse_query', [&$this, 'action_parse_query'], 10);
+		//add_action('parse_query', [&$this, 'action_parse_query'], 10);
+
+		add_action( 'current_screen', function( $screen ) {
+			if ( $screen->id === 'edit-shop_order' ) {
+				$this->plugin->debug('[action_parse_query] Function triggered.');
+
+				// You're on the WooCommerce Orders admin page
+				// You can now hook into parse_query or modify filters
+			}
+		});
+		
+		
 
 	}
 	
@@ -204,7 +215,7 @@ class wdo_Backend {
 
 		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
-		
+
 		global $pagenow;
 		if ( $pagenow === 'edit.php' && $query->get('post_type') === 'shop_order' ) {
 			$this->plugin->debug('[action_parse_query] Function triggered.');
