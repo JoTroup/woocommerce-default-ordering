@@ -212,6 +212,8 @@ class wdo_Backend {
 
 		// Check if conditions are met for WooCommerce orders page
 
+		$this->plugin->debug('[action_parse_query] '. ! is_admin() . ! $query->is_main_query());
+
 		if ( ! is_admin() || ! $query->is_main_query() ) return;
 
 		$this->plugin->debug('[action_parse_query] is_admin and is_main_query passed.');
@@ -222,7 +224,7 @@ class wdo_Backend {
 
 
 		$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
-		
+
         if ( current_user_can('shop_manager') ) {
             
         }
