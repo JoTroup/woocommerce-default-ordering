@@ -152,14 +152,14 @@ class wdo_Backend {
 	public function action_parse_query($query) {
 		global $pagenow;
 
-		 // Debug log to verify the function is triggered
+		// Debug log to verify the function is triggered
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
 		// Initialize
 		$query_vars = &$query->query_vars;
 
-		// Check if conditions are met
-		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] == 'shop_order') {
+		// Check if conditions are met for WooCommerce orders page
+		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] === 'shop_order') {
 			$this->plugin->debug('[action_parse_query] Conditions met. Modifying query.');
 
 			// Get the 'orderby' value from plugin settings
