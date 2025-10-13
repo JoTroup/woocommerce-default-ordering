@@ -27,6 +27,9 @@ class wdo_Backend {
 		//add_action('parse_query', [&$this, 'action_parse_query'], 10);
 
 		add_action( 'current_screen', function( $screen ) {
+
+			$this->plugin->debug('[action_parse_query] Screen ID ' . $screen->id);
+
 			if ( $screen->id === 'woocommerce_page_wc-orders' ) {
 				$this->plugin->debug('[action_parse_query] Function triggered.');
 
