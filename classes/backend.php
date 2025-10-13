@@ -95,18 +95,60 @@ class wdo_Backend {
 				// Get the current value or default to 'date'
 				$options = get_option($this->plugin->setPrefix("options"), []);
 				$value = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date';
+				$custom_value = isset($options['admin_orderby_custom']) ? $options['admin_orderby_custom'] : '';
 				?>
-				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby]">
+				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby]" id="admin_orderby">
 					<option value="date" <?php selected($value, 'date'); ?>><?php esc_html_e('Date', $this->plugin->config["textDomain"]); ?></option>
 					<option value="title" <?php selected($value, 'title'); ?>><?php esc_html_e('Title', $this->plugin->config["textDomain"]); ?></option>
 					<option value="ID" <?php selected($value, 'ID'); ?>><?php esc_html_e('ID', $this->plugin->config["textDomain"]); ?></option>
 					<option value="modified" <?php selected($value, 'modified'); ?>><?php esc_html_e('Last Modified', $this->plugin->config["textDomain"]); ?></option>
+					<option value="custom" <?php selected($value, 'custom'); ?>><?php esc_html_e('Custom', $this->plugin->config["textDomain"]); ?></option>
 				</select>
+				<div id="custom_orderby_field" style="margin-top: 10px; <?php echo $value === 'custom' ? '' : 'display: none;'; ?>">
+					<label for="admin_orderby_custom"><?php esc_html_e('Custom Order By:', $this->plugin->config["textDomain"]); ?></label>
+					<input type="text" name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby_custom]" id="admin_orderby_custom" value="<?php echo esc_attr($custom_value); ?>" />
+				</div>
+				<script>
+					(function() {
+						const selectField = document.getElementById('admin_orderby');
+						const customField = document.getElementById('custom_orderby_field');
+						selectField.addEventListener('change', function() {
+							if (this.value === 'custom') {
+								customField.style.display = 'block';
+							} else {
+								customField.style.display = 'none';
+							}
+						});
+					})();
+				</script>
 				<?php
 			},
 			$woo_default_order,
 			$menu1_section1
 		);
+
+		add_settings_field(
+			$this->plugin->setPrefix("admin_filterStatus"),
+				__("Exclude Order Statuses", $this->plugin->config["textDomain"]),
+				function() {
+					$options = get_option($this->plugin->setPrefix("options"), []);
+					$selected_statuses = isset($options['admin_filterStatus']) ? $options['admin_filterStatus'] : [];
+					$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
+	
+					?>
+					<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus][]" id="admin_filterStatus" multiple style="width: 100%; height: auto;">
+						<?php foreach ($statuses as $status_key => $status_label): ?>
+							<option value="<?php echo esc_attr($status_key); ?>" <?php echo in_array($status_key, $selected_statuses) ? 'selected' : ''; ?>>
+								<?php echo esc_html($status_label); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+					<p class="description"><?php esc_html_e('Select the order statuses to exclude from the WooCommerce order view.', $this->plugin->config["textDomain"]); ?></p>
+					<?php
+				},
+				$woo_default_order,
+				$menu1_section1
+			);
 
 		// Register the settings
 		register_setting(
@@ -169,12 +211,39 @@ class wdo_Backend {
 			$query->set('orderby', $orderby);
 			$query->set('order', 'ASC');
 
+				// Exclude selected statuses
+				$excluded_statuses = $this->plugin->getOption('admin_filterStatus', []);
+				if (!empty($excluded_statuses)) {
+					$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
+				}
+
 			// Debug log to confirm query modification
-			$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC');
+			$this->plugin->debug('[action_parse_query] Query modified. Orderby: ' . $orderby . ', Order: ASC, Excluded Statuses: ' . implode(', ', $excluded_statuses));
 		} else {
 			// Debug log if conditions are not met
 			$this->plugin->debug('[action_parse_query] Conditions not met. Query not modified.');
 		}
 	}
+
+	/**
+	 * Hide orders by status for specific roles.
+	 */
+	public function hide_orders_by_status_for_role($query) {
+		if (!is_admin() || !$query->is_main_query()) return;
+
+		global $pagenow;
+		if ($pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order') return;
+
+		// Get excluded statuses from admin settings
+		$excluded_statuses = $this->plugin->getOption('admin_filterStatus', []);
+
+		if (!empty($excluded_statuses)) {
+			// Modify query to exclude those statuses
+			$query->set('post_status', array_diff(array_keys(wc_get_order_statuses()), $excluded_statuses));
+		}
+	}
 	
 }
+
+
+
