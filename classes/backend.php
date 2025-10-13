@@ -202,7 +202,7 @@ class wdo_Backend {
 		$query_vars = &$query->query_vars;
 
 
-		$this->plugin->debug('[action_parse_query] $pagenow ' . '--' . $query_vars['post_type']);
+		$this->plugin->debug('[action_parse_query] '. $pagenow . '--' . $query_vars['post_type']);
 
 		// Check if conditions are met for WooCommerce orders page
 		if (is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset($query_vars['post_type']) && $query_vars['post_type'] === 'shop_order') {
