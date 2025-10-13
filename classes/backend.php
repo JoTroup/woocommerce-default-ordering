@@ -214,7 +214,7 @@ class wdo_Backend {
 
 		$this->plugin->debug('[action_parse_query] is_admin(): ' . var_export(is_admin(), true) . ' is_main_query ' . ! $query->is_main_query());
 
-		if ( ! is_admin() || ! $query->is_main_query() ) return;
+		if ( ! var_export(is_admin(), true) || ! $query->is_main_query() ) return;
 
 		$this->plugin->debug('[action_parse_query] is_admin and is_main_query passed.');
 
