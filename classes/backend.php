@@ -199,36 +199,14 @@ class wdo_Backend {
 	 * Modify WooCommerce admin order list query.
 	 */
 	public function action_parse_query($query) {
+		if (!is_admin() || !$query->is_main_query()) return;
+
 		global $pagenow;
+		if ($pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order') return;
+	
+		$this->plugin->debug('[action_pre_get_posts] is_admin and is_main_query passed.');
 
-		// Debug log to verify the function is triggered
-		$this->plugin->debug('[action_parse_query] Function triggered.');
-
-		// Initialize
-		$query_vars = &$query->query_vars;
-
-
-		$this->plugin->debug('[action_parse_query] '. $pagenow . '--' . $query_vars['post_type']);
-
-		// Check if conditions are met for WooCommerce orders page
-
-		$this->plugin->debug('[action_parse_query] is_admin(): ' . var_export(is_admin(), true) . ' is_main_query ' . $query->is_main_query());
-
-		if (! $query->is_main_query() ) return;
-
-		$this->plugin->debug('[action_parse_query] is_admin and is_main_query passed.');
-
-        if ( $pagenow !== 'edit.php' || $query->get('post_type') !== 'shop_order' ) return;
-
-		$this->plugin->debug('[action_parse_query] pagenow and post_type passed.');
-
-
-		$query->set( 'post_status', array( 'wc-processing', 'wc-completed' ) );
-
-        if ( current_user_can('shop_manager') ) {
-            
-        }
-
+		$query->set('post_status', ['wc-processing', 'wc-completed']);
 
 		
 
