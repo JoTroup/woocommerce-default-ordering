@@ -29,8 +29,6 @@ class wdo_Backend {
 
 		add_action('woocommerce_order_list_table_prepare_items_query_args', [$this, 'hide_orders_by_status_for_role'], 25);
 
-		add_filter('post_where', [$this, 'action_parse_query_cpt'], 25, 2);
-
 		add_action( 'current_screen', function( $screen ) {
 
 			$this->plugin->debug('[action_parse_query] Screen ID ' . $screen->id);
@@ -235,36 +233,6 @@ class wdo_Backend {
 		return $clauses;
 	}
 
-
-	public function action_parse_query_cpt {$where, $query} {
-		global $wpdb;
-	
-		if( $query->is_search() ) {
-			return $where;
-		}
-
-		$selected_product_id = isset( $_GET[ 'filter_by_product' ] ) && $_GET[ 'filter_by_product' ] ? absint( $_GET[ 'filter_by_product' ] ) : 0;
-		if( ! $selected_product_id ) {
-			return $where;
-		}
-
-		$where .=
-		"
-		AND {$selected_product_id}
-		IN (
-			SELECT itemmeta.meta_value
-			FROM {$wpdb->prefix}woocommerce_order_items as items
-			LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as itemmeta
-			ON itemmeta.order_item_id = items.order_item_id
-			WHERE items.order_item_type = 'line_item'
-			AND itemmeta.meta_key = '_product_id'
-			AND {$wpdb->posts}.ID = items.order_id
-		)
-		";
-
-		return $where;
-	}
-
 	/**
 	 * Hide orders by status for specific roles.
 	 */
@@ -276,7 +244,7 @@ class wdo_Backend {
 		return $query_args;
 	}
 
-	
+
 	
 }
 
