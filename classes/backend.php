@@ -238,8 +238,19 @@ class wdo_Backend {
 	 */
 	public function hide_orders_by_status_for_role($query_args) {
 		// Modify the query to order by order ID
-		$query_args['orderby'] = 'ID';
+
+
+
+		$options = get_option($this->plugin->setPrefix("options"), []);
+		$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
+		$query_args['orderby'] = $orderby;
 		$query_args['order'] = 'ASC';
+
+		// Filter orders by excluded statuses
+		if (!empty($options['admin_filterStatus'])) {
+			$excluded_statuses = (array) $options['admin_filterStatus'];
+			$query_args['status'] = array_diff(wc_get_order_statuses(), $excluded_statuses);
+		}
 
 		return $query_args;
 	}
