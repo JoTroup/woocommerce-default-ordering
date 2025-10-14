@@ -25,7 +25,8 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('parse_query', [&$this, 'action_parse_query'], 10);
+		add_action('woocommerce_orders_table_query_clauses', 'action_parse_query');
+		add_action( 'restrict_manage_posts', 'action_parse_query', 25 );
 
 		add_action( 'current_screen', function( $screen ) {
 
@@ -217,20 +218,17 @@ class wdo_Backend {
 	/**
 	 * Modify WooCommerce admin order list query.
 	 */
-	public function action_parse_query($query) {
+	public function action_parse_query($clauses) {
+
+		global $wpdb;
+
 		// Ensure this is the main query and for the WooCommerce orders page
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
 		$this->plugin->debug('[action_parse_query] Is Order Page? ' . ($this->isOrderPage ? 'Yes' : 'No'));
-		if (!is_admin() || !$this->isOrderPage) return;
+		$clauses['order_by'] = "{$wpdb->prefix}wc_orders.id ASC";
 
-		$this->plugin->debug('[action_parse_query] Modifying query.');
-
-		// Use WooCommerce-specific filter to modify the query
-		add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query_args) {
-			$query_args['status'] = array('wc-processing', 'wc-completed'); // Set the desired statuses
-			return $query_args;
-		});
+		return $clauses;
 	}
 
 	/**
