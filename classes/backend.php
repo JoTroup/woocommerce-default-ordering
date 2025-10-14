@@ -25,7 +25,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('woocommerce_orders_table_query_clauses',[$this, 'action_parse_query']);
+		add_filter('woocommerce_orders_table_query_clauses',[$this, 'action_parse_query'], 25);
 
 		add_action( 'current_screen', function( $screen ) {
 
@@ -225,6 +225,7 @@ class wdo_Backend {
 		$this->plugin->debug('[action_parse_query] Function triggered.');
 
 		$this->plugin->debug('[action_parse_query] Is Order Page? ' . ($this->isOrderPage ? 'Yes' : 'No'));
+		$this->plugin->debug('[action_parse_query] $clauses: ' . print_r($clauses, true));
 		$clauses['order_by'] = "{$wpdb->prefix}wc_orders.id ASC";
 
 		return $clauses;
