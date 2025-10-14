@@ -25,7 +25,7 @@ class wdo_Backend {
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
 
 
-		add_action('woocommerce_orders_table_query_clauses', 'action_parse_query');
+		add_action('woocommerce_orders_table_query_clauses',[$this, 'action_parse_query']);
 
 		add_action( 'current_screen', function( $screen ) {
 
