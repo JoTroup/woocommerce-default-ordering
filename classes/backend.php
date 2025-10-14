@@ -26,7 +26,6 @@ class wdo_Backend {
 
 
 		add_action('woocommerce_orders_table_query_clauses', 'action_parse_query');
-		add_action( 'restrict_manage_posts', 'action_parse_query', 25 );
 
 		add_action( 'current_screen', function( $screen ) {
 
@@ -218,7 +217,7 @@ class wdo_Backend {
 	/**
 	 * Modify WooCommerce admin order list query.
 	 */
-	public function action_parse_query($clauses) {
+	public function action_parse_query ($clauses) {
 
 		global $wpdb;
 
