@@ -152,65 +152,65 @@ class wdo_Backend {
 		// Add a field for the 'admin_filterStatus' setting
 		add_settings_field(
 			$this->plugin->setPrefix("admin_filterStatus"),
-			__("Exclude Order Statuses", $this->plugin->config["textDomain"]),
+			__("Filter Status", $this->plugin->config["textDomain"]),
 			function() {
 				$options = get_option($this->plugin->setPrefix("options"), []);
-					$excluded_statuses = isset($options['admin_filterStatus']) ? (array) $options['admin_filterStatus'] : [];
-					$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
+				$excluded_statuses = isset($options['admin_filterStatus']) ? explode(',', $options['admin_filterStatus']) : [];
+				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
 
-					$included_statuses = array_diff(array_keys($statuses), $excluded_statuses); // Calculate included statuses
-					?>
-					<style>
-						#included_statuses, #excluded_statuses {
-							border: 1px solid #ccc;
-							padding: 10px;
-							min-height: 100px;
-							width: 45%;
-							display: inline-block;
-							vertical-align: top;
-						}
-						#included_statuses li, #excluded_statuses li {
-							list-style: none;
-							margin: 5px 0;
-							padding: 5px;
-							background: #f1f1f1;
-							cursor: move;
-						}
-					</style>
-					<div>
-						<h4><?php esc_html_e('Included Statuses', $this->plugin->config["textDomain"]); ?></h4>
-						<ul id="included_statuses">
-							<?php foreach ($included_statuses as $status): ?>
-								<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-					<div>
-						<h4><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></h4>
-						<ul id="excluded_statuses">
-							<?php foreach ($excluded_statuses as $status): ?>
-								<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-					<input type="hidden" name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus]" id="admin_filterStatus" value="<?php echo esc_attr(implode(',', $excluded_statuses)); ?>" />
-					<script>
-						(function($) {
-							$(function() {
-								$('#included_statuses, #excluded_statuses').sortable({
-									connectWith: '.connectedSortable',
-									update: function() {
-										const excluded = [];
-										$('#excluded_statuses li').each(function() {
-											excluded.push($(this).data('status'));
-										});
-										$('#admin_filterStatus').val(excluded.join(','));
-									}
-								}).addClass('connectedSortable');
-							});
-						})(jQuery);
-					</script>
-					<?php
+				$included_statuses = array_diff(array_keys($statuses), $excluded_statuses); // Calculate included statuses
+				?>
+				<style>
+					#included_statuses, #excluded_statuses {
+						border: 1px solid #ccc;
+						padding: 10px;
+						min-height: 100px;
+						width: 45%;
+						display: inline-block;
+						vertical-align: top;
+					}
+					#included_statuses li, #excluded_statuses li {
+						list-style: none;
+						margin: 5px 0;
+						padding: 5px;
+						background: #f1f1f1;
+						cursor: move;
+					}
+				</style>
+				<div>
+					<h4><?php esc_html_e('Included Statuses', $this->plugin->config["textDomain"]); ?></h4>
+					<ul id="included_statuses" class="connectedSortable">
+						<?php foreach ($included_statuses as $status): ?>
+							<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<div>
+					<h4><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></h4>
+					<ul id="excluded_statuses" class="connectedSortable">
+						<?php foreach ($excluded_statuses as $status): ?>
+							<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<input type="hidden" name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus]" id="admin_filterStatus" value="<?php echo esc_attr(implode(',', $excluded_statuses)); ?>" />
+				<script>
+					(function($) {
+						$(document).ready(function() {
+							$('#included_statuses, #excluded_statuses').sortable({
+								connectWith: '.connectedSortable',
+								update: function() {
+									const excluded = [];
+									$('#excluded_statuses li').each(function() {
+										excluded.push($(this).data('status'));
+									});
+									$('#admin_filterStatus').val(excluded.join(','));
+								}
+							}).addClass('connectedSortable');
+						});
+					})(jQuery);
+				</script>
+				<?php
 			},
 			$woo_default_order,
 			$menu1_section1
