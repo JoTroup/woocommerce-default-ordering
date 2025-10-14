@@ -249,7 +249,8 @@ class wdo_Backend {
 		// Filter orders by excluded statuses
 		if (!empty($options['admin_filterStatus'])) {
 			$excluded_statuses = (array) $options['admin_filterStatus'];
-			$query_args['status'] = array_diff(wc_get_order_statuses(), $excluded_statuses);
+			$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
+			$query_args['status'] = array_diff($all_statuses, $excluded_statuses);
 		}
 
 		return $query_args;
