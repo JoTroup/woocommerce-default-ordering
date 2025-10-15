@@ -208,7 +208,6 @@ class wdo_Backend {
 							// Ensure sortable functionality is initialized
 							$('#included_statuses, #excluded_statuses').sortable({
 								connectWith: '.connectedSortable',
-								placeholder: 'ui-state-highlight',
 								update: function() {
 									const excluded = [];
 									$('#excluded_statuses li').each(function() {
