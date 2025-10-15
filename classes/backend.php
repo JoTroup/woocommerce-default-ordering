@@ -129,6 +129,7 @@ class wdo_Backend {
 
 				// Default WooCommerce order fields
 				$fields = [
+					'custom'    => __('Custom Field', $this->plugin->config["textDomain"]),
 					'ID'        => __('Order ID', $this->plugin->config["textDomain"]),
 					'date'      => __('Date Created', $this->plugin->config["textDomain"]),
 					'modified'  => __('Last Modified', $this->plugin->config["textDomain"]),
