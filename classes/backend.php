@@ -385,7 +385,13 @@ class wdo_Backend {
 	 */
 	public function hide_orders_by_status_for_role($query_args) {
 		$options = get_option($this->plugin->setPrefix("options"), []);
-		$orderby = isset($options['admin_orderby_custom']) ? $options['admin_orderby_custom'] : isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
+		if (isset($options['admin_orderby_custom'])) {
+			$orderby = $options['admin_orderby_custom'];
+		} elseif (isset($options['admin_orderby'])) {
+			$orderby = $options['admin_orderby'];
+		} else {
+			$orderby = 'ID';
+		}
 		$query_args['orderby'] = $orderby;
 		$query_args['order'] = 'ASC';
 
