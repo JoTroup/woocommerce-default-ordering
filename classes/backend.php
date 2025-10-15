@@ -172,7 +172,7 @@ class wdo_Backend {
 						});
 					})();
 				</script>
-				<script>
+				<!-- <script>
 					(function() {
 						const selectField = document.getElementById('admin_orderby');
 						const customField = document.getElementById('custom_orderby_field');
@@ -186,7 +186,7 @@ class wdo_Backend {
 							}
 						});
 					})();
-				</script>
+				</script> -->
 				<?php
 			},
 			$woo_default_order,
