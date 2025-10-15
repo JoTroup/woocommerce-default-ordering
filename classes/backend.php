@@ -181,6 +181,9 @@ class wdo_Backend {
 
 				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
 				$included_statuses = array_diff(array_keys($statuses), $excluded_statuses); // Calculate included statuses
+				$this->plugin->debug('[admin_filterStatus] Included Statuses: ' . print_r($included_statuses, true));
+				$this->plugin->debug('[admin_filterStatus] Excluded Statuses: ' . print_r($excluded_statuses, true));
+
 				?>
 				<style>
 					#included_statuses, #excluded_statuses {
@@ -208,14 +211,14 @@ class wdo_Backend {
 					</ul>
 				</div>
 				<div>
-					<!-- <p><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></p>
+					<p><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></p>
 					<ul id="excluded_statuses" class="connectedSortable">
 						<?php foreach ($excluded_statuses as $status): ?>
 							<?php if (isset($statuses[$status])): ?>
 								<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
 							<?php endif; ?>
 						<?php endforeach; ?>
-					</ul> -->
+					</ul>
 				</div>
 				<input type="hidden" name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus]" id="admin_filterStatus" value="<?php echo esc_attr(json_encode($excluded_statuses)); ?>" />
 				<script>
