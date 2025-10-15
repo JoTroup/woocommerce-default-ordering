@@ -208,6 +208,7 @@ class wdo_Backend {
 							// Ensure sortable functionality is initialized
 							$('#included_statuses, #excluded_statuses').sortable({
 								connectWith: '.connectedSortable',
+								placeholder: 'ui-state-highlight', // Re-added placeholder for visual feedback
 								update: function() {
 									const excluded = [];
 									$('#excluded_statuses li').each(function() {
@@ -296,7 +297,6 @@ class wdo_Backend {
 	 * Hide orders by status for specific roles.
 	 */
 	public function hide_orders_by_status_for_role($query_args) {
-
 		$options = get_option($this->plugin->setPrefix("options"), []);
 		$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
 		$query_args['orderby'] = $orderby;
@@ -304,9 +304,15 @@ class wdo_Backend {
 
 		// Filter orders by excluded statuses
 		if (!empty($options['admin_filterStatus'])) {
-			$excluded_statuses = (array) $options['admin_filterStatus'];
-			$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
-			$query_args['status'] = array_diff($all_statuses, $excluded_statuses);
+			// Decode JSON or cast to array to ensure valid data
+			$excluded_statuses = is_string($options['admin_filterStatus']) 
+				? json_decode($options['admin_filterStatus'], true) 
+				: (array) $options['admin_filterStatus'];
+
+			if (is_array($excluded_statuses)) {
+				$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
+				$query_args['status'] = array_diff($all_statuses, $excluded_statuses); // Ensure valid keys
+			}
 		}
 
 		return $query_args;
