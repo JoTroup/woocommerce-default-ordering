@@ -16,17 +16,15 @@ class wdo_Backend {
 	private $pages = [];
 	public function __construct($instance) {
 		$this->plugin = $instance;
-		
-		if(current_user_can('manage_options'))
+
+		if (current_user_can('manage_options')) {
 			add_action('admin_menu', [&$this, 'register_admin_menu']);
-		
+			add_action('admin_enqueue_scripts', [&$this, 'enqueue_admin_scripts']); // Enqueue scripts
+		}
+
 		add_action('admin_init', [&$this, 'register_settings']);
-		
 		add_action('current_screen', [$this, 'wpdocs_this_screen']);
-
-
-		add_filter('woocommerce_orders_table_query_clauses',[$this, 'action_parse_query'], 25);
-
+		add_filter('woocommerce_orders_table_query_clauses', [$this, 'action_parse_query'], 25);
 		add_action('woocommerce_order_list_table_prepare_items_query_args', [$this, 'hide_orders_by_status_for_role'], 25);
 
 		add_action( 'current_screen', function( $screen ) {
@@ -43,12 +41,25 @@ class wdo_Backend {
 				$this->plugin->debug('[action_parse_query] bypass triggered.');
 				$this->isOrderPage = false;
 			}
-		});
-		
-		
-
+		 });
 	}
 	
+	/**
+	 * Enqueue admin scripts and styles.
+	 */
+	public function enqueue_admin_scripts($hook) {
+		// Only enqueue scripts on the plugin's settings page
+		if (strpos($hook, $this->plugin->setPrefix("woo-default-order")) === false) {
+			return;
+		}
+
+		// Enqueue jQuery UI sortable
+		wp_enqueue_script('jquery-ui-sortable');
+
+		// Enqueue jQuery UI styles (optional, for better visuals)
+		wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+	}
+
 	public function wpdocs_this_screen() {
 		$current_screen = get_current_screen();
 		$this->plugin->debug('[backend] Current Screen: ' . $current_screen->id);
