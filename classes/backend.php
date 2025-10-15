@@ -197,7 +197,9 @@ class wdo_Backend {
 					<h4><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></h4>
 					<ul id="excluded_statuses" class="connectedSortable">
 						<?php foreach ($excluded_statuses as $status): ?>
-							<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
+							<?php if (isset($statuses[$status])): ?>
+								<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
+							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>
 				</div>
