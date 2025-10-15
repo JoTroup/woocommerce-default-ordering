@@ -177,6 +177,36 @@ class wdo_Backend {
 			$menu1_section1
 		);
 
+
+		add_settings_field(
+			$this->plugin->setPrefix("admin_appliedtorole"),
+			__("Role Applied To", $this->plugin->config["textDomain"]),
+			function() {
+				// Get the current value or default to 'date'
+				$options = get_option($this->plugin->setPrefix("options"), []);
+				$value = isset($options['admin_appliedtorole']) ? $options['admin_appliedtorole'] : '';
+
+
+
+				// Get all roles from WordPress
+				global $wp_roles;
+				$roles = $wp_roles->roles;
+
+				// Display roles as a dropdown
+				?>
+				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_appliedtorole]" id="admin_appliedtorole">
+					<?php foreach ($roles as $role_key => $role_data): ?>
+						<option value="<?php echo esc_attr($role_key); ?>" <?php selected($value, $role_key); ?>>
+							<?php echo esc_html($role_data['name']); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+				<?php
+			},
+			$woo_default_order,
+			$menu1_section1
+		);
+
 		// Add a field for the 'admin_filterStatus' setting
 		add_settings_field(
 			$this->plugin->setPrefix("admin_filterStatus"),
@@ -340,6 +370,19 @@ class wdo_Backend {
 		$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
 		$query_args['orderby'] = $orderby;
 		$query_args['order'] = 'ASC';
+
+		
+		// Check if 'admin_appliedtorole' is set and apply filter for the selected role
+		if (!empty($options['admin_appliedtorole'])) {
+			$current_user = wp_get_current_user();
+			$applied_role = $options['admin_appliedtorole'];
+
+			// Check if the current user has the selected role
+			if (!in_array($applied_role, $current_user->roles, true)) {
+				return $query_args; // Skip applying the filter if the role doesn't match
+			}
+		}
+
 
 		// Filter orders by excluded statuses
 		if (!empty($options['admin_filterStatus'])) {
