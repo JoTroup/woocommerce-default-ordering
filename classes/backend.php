@@ -163,7 +163,7 @@ class wdo_Backend {
 			__("Filter Status", $this->plugin->config["textDomain"]),
 			function() {
 				$options = get_option($this->plugin->setPrefix("options"), []);
-				$excluded_statuses = isset($options['admin_filterStatus']) ? (array) $options['admin_filterStatus'] : [];
+				$excluded_statuses = isset($options['admin_filterStatus']) ? json_decode($options['admin_filterStatus'], true) : []; // Decode JSON
 				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
 
 				$included_statuses = array_diff(array_keys($statuses), $excluded_statuses); // Calculate included statuses
@@ -226,14 +226,21 @@ class wdo_Backend {
 			$menu1_section1
 		);
 
-		// Register the settings
+		// Register the settings with proper sanitization
 		register_setting(
 			$this->plugin->setPrefix("options"),
-			$this->plugin->setPrefix("options"), // Ensure the correct option key is registered
+			$this->plugin->setPrefix("options"),
 			[
 				'default' => [
 					'admin_orderby' => 'date', // Set default value for admin_orderby
 				],
+				'sanitize_callback' => function($input) {
+					// Ensure admin_filterStatus is saved as a JSON string
+					if (isset($input['admin_filterStatus']) && is_array($input['admin_filterStatus'])) {
+						$input['admin_filterStatus'] = json_encode($input['admin_filterStatus']);
+					}
+					return $input;
+				}
 			]
 		);
 	}
