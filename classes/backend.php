@@ -60,13 +60,12 @@ class wdo_Backend {
 	 * Register admin menu.
 	 */
 	public function register_admin_menu() {
-		if(!current_user_can('manage_options')) {
+		if (!current_user_can('manage_options')) {
 			wp_die(__('You do not have sufficient permissions to access this page.', $this->plugin->config['textDomain']));
 		}
 
-
 		/**
-		 * Add a submenu page.
+		 * Add a submenu page under WooCommerce.
 		 * https://developer.wordpress.org/reference/functions/add_submenu_page/
 		 *
 		 * Arguments:
@@ -74,18 +73,16 @@ class wdo_Backend {
 		 * 2. Page Title
 		 * 3. Menu Title
 		 * 4. Capability
-		 * 5. Menu Slug (you will overwrite that menu item if specified slug is already exists)
+		 * 5. Menu Slug
 		 * 6. Function to display page
-		 * 7. Submenu Position (larger --> move down, smaller --> move up)
 		 */
 		$page = add_submenu_page(
-			"options-general.php",
+			"woocommerce", // Parent slug for WooCommerce
 			__("Woo Default Ordering", $this->plugin->config["textDomain"]),
-			__("WooCommerce Default Ordering", $this->plugin->config["textDomain"]),
+			__("Default Ordering", $this->plugin->config["textDomain"]),
 			"manage_options",
 			$this->plugin->setPrefix("woo-default-order"),
-			[&$this, "render_page_woo_default_order"],
-			10
+			[&$this, "render_page_woo_default_order"]
 		);
 		array_push($this->pages, $page);
 	}
