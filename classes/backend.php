@@ -163,9 +163,23 @@ class wdo_Backend {
 			__("Filter Status", $this->plugin->config["textDomain"]),
 			function() {
 				$options = get_option($this->plugin->setPrefix("options"), []);
-				$excluded_statuses = isset($options['admin_filterStatus']) ? json_decode($options['admin_filterStatus'], true) : []; // Decode JSON
-				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
+				$excluded_statuses = [];
 
+				// Decode or cast admin_filterStatus to ensure it's a valid array
+				if (isset($options['admin_filterStatus'])) {
+					if (is_string($options['admin_filterStatus'])) {
+						$excluded_statuses = json_decode($options['admin_filterStatus'], true);
+					} elseif (is_array($options['admin_filterStatus'])) {
+						$excluded_statuses = $options['admin_filterStatus'];
+					}
+				}
+
+				// Ensure excluded_statuses is a valid array
+				if (!is_array($excluded_statuses)) {
+					$excluded_statuses = [];
+				}
+
+				$statuses = wc_get_order_statuses(); // Get all WooCommerce order statuses
 				$included_statuses = array_diff(array_keys($statuses), $excluded_statuses); // Calculate included statuses
 				?>
 				<style>
@@ -186,7 +200,7 @@ class wdo_Backend {
 					}
 				</style>
 				<div>
-					<h4><?php esc_html_e('Included Statuses', $this->plugin->config["textDomain"]); ?></h4>
+					<p><?php esc_html_e('Included Statuses', $this->plugin->config["textDomain"]); ?></p>
 					<ul id="included_statuses" class="connectedSortable">
 						<?php foreach ($included_statuses as $status): ?>
 							<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($statuses[$status]); ?></li>
@@ -210,7 +224,7 @@ class wdo_Backend {
 							// Ensure sortable functionality is initialized
 							$('#included_statuses, #excluded_statuses').sortable({
 								connectWith: '.connectedSortable',
-								placeholder: 'ui-state-highlight', // Re-added placeholder for visual feedback
+								placeholder: 'ui-state-highlight',
 								update: function() {
 									const excluded = [];
 									$('#excluded_statuses li').each(function() {
