@@ -126,13 +126,33 @@ class wdo_Backend {
 				$options = get_option($this->plugin->setPrefix("options"), []);
 				$value = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'date';
 				$custom_value = isset($options['admin_orderby_custom']) ? $options['admin_orderby_custom'] : '';
+
+				// Default WooCommerce order fields
+				$fields = [
+					'ID'        => __('Order ID', $this->plugin->config["textDomain"]),
+					'date'      => __('Date Created', $this->plugin->config["textDomain"]),
+					'modified'  => __('Last Modified', $this->plugin->config["textDomain"]),
+					'title'     => __('Title', $this->plugin->config["textDomain"]),
+					// Add more default fields if needed
+				];
+			
+				// Get custom meta fields (added by plugins)
+				global $wpdb;
+				$meta_keys = $wpdb->get_col("SELECT DISTINCT meta_key FROM {$wpdb->postmeta} WHERE post_id IN (SELECT ID FROM {$wpdb->posts} WHERE post_type = 'shop_order') LIMIT 50");
+				if ($meta_keys) {
+					foreach ($meta_keys as $meta_key) {
+						if (!empty($meta_key) && !isset($fields[$meta_key])) {
+							$fields[$meta_key] = $meta_key;
+						}
+					}
+				}
 				?>
 				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_orderby]" id="admin_orderby">
-					<option value="date" <?php selected($value, 'date'); ?>><?php esc_html_e('Date', $this->plugin->config["textDomain"]); ?></option>
-					<option value="title" <?php selected($value, 'title'); ?>><?php esc_html_e('Title', $this->plugin->config["textDomain"]); ?></option>
-					<option value="ID" <?php selected($value, 'ID'); ?>><?php esc_html_e('ID', $this->plugin->config["textDomain"]); ?></option>
-					<option value="modified" <?php selected($value, 'modified'); ?>><?php esc_html_e('Last Modified', $this->plugin->config["textDomain"]); ?></option>
-					<option value="custom" <?php selected($value, 'custom'); ?>><?php esc_html_e('Custom', $this->plugin->config["textDomain"]); ?></option>
+					<?php foreach ($fields as $field_key => $field_label): ?>
+						<option value="<?php echo esc_attr($field_key); ?>" <?php selected($value, $field_key); ?>>
+							<?php echo esc_html($field_label); ?>
+						</option>
+					<?php endforeach; ?>
 				</select>
 				<div id="custom_orderby_field" style="margin-top: 10px; <?php echo $value === 'custom' ? '' : 'display: none;'; ?>">
 					<label for="admin_orderby_custom"><?php esc_html_e('Custom Order By:', $this->plugin->config["textDomain"]); ?></label>
