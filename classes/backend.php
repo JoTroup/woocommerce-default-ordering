@@ -172,6 +172,21 @@ class wdo_Backend {
 						});
 					})();
 				</script>
+				<script>
+					(function() {
+						const selectField = document.getElementById('admin_orderby');
+						const customField = document.getElementById('custom_orderby_field');
+						const customInput = document.getElementById('admin_orderby_custom');
+						selectField.addEventListener('change', function() {
+							if (this.value === 'custom') {
+								customField.style.display = 'block';
+							} else {
+								customField.style.display = 'none';
+								customInput.value = ''; // Reset custom field when not selected
+							}
+						});
+					})();
+				</script>
 				<?php
 			},
 			$woo_default_order,
@@ -370,7 +385,7 @@ class wdo_Backend {
 	 */
 	public function hide_orders_by_status_for_role($query_args) {
 		$options = get_option($this->plugin->setPrefix("options"), []);
-		$orderby = isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
+		$orderby = isset($options['admin_orderby_custom']) ? $options['admin_orderby_custom'] : isset($options['admin_orderby']) ? $options['admin_orderby'] : 'ID';
 		$query_args['orderby'] = $orderby;
 		$query_args['order'] = 'ASC';
 
