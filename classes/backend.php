@@ -384,6 +384,11 @@ class wdo_Backend {
 	 * Hide orders by status for specific roles.
 	 */
 	public function hide_orders_by_status_for_role($query_args) {
+		// Only run if ?status=all is present in the URL
+		if (!isset($_GET['status']) || $_GET['status'] !== 'all') {
+			return $query_args;
+		}
+
 		$options = get_option($this->plugin->setPrefix("options"), []);
 		if (isset($options['admin_orderby_custom'])) {
 			$orderby = $options['admin_orderby_custom'];
