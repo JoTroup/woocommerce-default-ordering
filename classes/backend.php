@@ -386,8 +386,8 @@ class wdo_Backend {
 	public function hide_orders_by_status_for_role($query_args) {
 		// Only run if ?status=all is present in the URL
 		$is_wc_orders_page = isset($_GET['page']) && $_GET['page'] === 'wc-orders';
-		$is_status_all = isset($_GET['status']) && $_GET['status'] === 'all';
-		if (!$is_wc_orders_page || !$is_status_all) {
+		$is_status_all_or_unset = !isset($_GET['status']) || $_GET['status'] === 'all';
+		if (!$is_wc_orders_page || !$is_status_all_or_unset) {
 			return $query_args;
 		}
 
