@@ -387,7 +387,7 @@ class wdo_Backend {
 		// Only run if ?status=all is present in the URL
 		$is_wc_orders_page = isset($_GET['page']) && $_GET['page'] === 'wc-orders';
 		$is_status_all = isset($_GET['status']) && $_GET['status'] === 'all';
-		if (!$is_status_all) {
+		if (!$is_wc_orders_page || !$is_status_all) {
 			return $query_args;
 		}
 
