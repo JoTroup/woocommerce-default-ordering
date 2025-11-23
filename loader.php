@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       WooCommerce Default Ordering
  * Plugin URI:        
- * Description:       Orders the default WooCommerce product listing by menu order, then title or specified from settings.
+ * Description:       Orders the default WooCommerce Order menu order.
  * Version:           1.1.2
  * Author:            Josiah Troup
  * Author URI:        
