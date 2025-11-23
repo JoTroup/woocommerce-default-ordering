@@ -2,9 +2,9 @@
 /**
  * Plugin Name:       WooCommerce Default Ordering
  * Plugin URI:        
- * Description:       
+ * Description:       Orders the default WooCommerce product listing by menu order, then title or specified from settings.
  * Version:           1.1.2
- * Author:            Josiah
+ * Author:            Josiah Troup
  * Author URI:        
  * Text Domain:       wdo
  * Domain Path:       /languages
