@@ -406,29 +406,13 @@ class wdo_Backend {
 			}
 
 			if (isset($options['admin_orderby_custom'])) {
-
 				$orderby = $options['admin_orderby_custom'];
-				$query_args['meta_key'] = $orderby;
-				$query_args['orderby'] = 'meta_value'; // or 'meta_value_num' if numeric
-
-				// Add filter to adjust ORDER BY so NULLs appear first
-				add_filter('posts_clauses', function($clauses) use ($orderby) {
-					// Only modify if ordering by our custom meta key
-					if (strpos($clauses['orderby'], 'meta_value') !== false) {
-						$clauses['orderby'] = "ORDER BY (pm.meta_value IS NULL OR pm.meta_value = '') ASC, pm.meta_value ASC";
-					}
-					return $clauses;
-				}, 20, 1);
-
-				//$orderby = $options['admin_orderby_custom'];
-			} elseif (!empty($options['admin_orderby'])) {
+			} elseif (isset($options['admin_orderby'])) {
 				$orderby = $options['admin_orderby'];
-        		$query_args['orderby'] = $orderby;
 			} else {
 				$orderby = 'ID';
-        		$query_args['orderby'] = $orderby;
 			}
-			//$query_args['orderby'] = $orderby;
+			$query_args['orderby'] = $orderby;
 			$query_args['order'] = 'ASC';
 
 			// Filter orders by excluded statuses
@@ -444,7 +428,7 @@ class wdo_Backend {
 				}
 			}
 		}
-
+		
 		return $query_args;
 	}
 
