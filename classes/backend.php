@@ -393,18 +393,8 @@ class wdo_Backend {
 			return $query_args;
 		}
 
+
 		$options = get_option($this->plugin->setPrefix("options"), []);
-		if (isset($options['admin_orderby_custom'])) {
-			$orderby = $options['admin_orderby_custom'];
-		} elseif (isset($options['admin_orderby'])) {
-			$orderby = $options['admin_orderby'];
-		} else {
-			$orderby = 'ID';
-		}
-		$query_args['orderby'] = $orderby;
-		$query_args['order'] = 'ASC';
-
-
 		// Check if 'admin_appliedtorole' is set and apply filter for the selected role
 		if (!empty($options['admin_appliedtorole'])) {
 			$current_user = wp_get_current_user();
@@ -414,22 +404,31 @@ class wdo_Backend {
 			if (!in_array($applied_role, $current_user->roles, true)) {
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
-		}
 
+			if (isset($options['admin_orderby_custom'])) {
+				$orderby = $options['admin_orderby_custom'];
+			} elseif (isset($options['admin_orderby'])) {
+				$orderby = $options['admin_orderby'];
+			} else {
+				$orderby = 'ID';
+			}
+			$query_args['orderby'] = $orderby;
+			$query_args['order'] = 'ASC';
 
-		// Filter orders by excluded statuses
-		if (!empty($options['admin_filterStatus'])) {
-			// Decode JSON or cast to array to ensure valid data
-			$excluded_statuses = is_string($options['admin_filterStatus']) 
-				? json_decode($options['admin_filterStatus'], true) 
-				: (array) $options['admin_filterStatus'];
+			// Filter orders by excluded statuses
+			if (!empty($options['admin_filterStatus'])) {
+				// Decode JSON or cast to array to ensure valid data
+				$excluded_statuses = is_string($options['admin_filterStatus']) 
+					? json_decode($options['admin_filterStatus'], true) 
+					: (array) $options['admin_filterStatus'];
 
-			if (is_array($excluded_statuses)) {
-				$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
-				$query_args['status'] = array_diff($all_statuses, $excluded_statuses); // Ensure valid keys
+				if (is_array($excluded_statuses)) {
+					$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
+					$query_args['status'] = array_diff($all_statuses, $excluded_statuses); // Ensure valid keys
+				}
 			}
 		}
-
+		
 		return $query_args;
 	}
 
