@@ -410,13 +410,13 @@ class wdo_Backend {
 			}
 
 			if (isset($options['admin_orderby_custom'])) {
-				$this->plugin->debug('[hide_orders_by_status_for_role] Using custom orderby: ' . $options['admin_orderby_custom']);
+				error_log('[hide_orders_by_status_for_role] Using custom orderby: ' . $options['admin_orderby_custom']);
 				$orderby = $options['admin_orderby_custom'];
 			} elseif (isset($options['admin_orderby'])) {
-				$this->plugin->debug('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
+				error_log('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
 			} else {
-				$this->plugin->debug('[hide_orders_by_status_for_role] No orderby set, defaulting to ID.');
+				error_log('[hide_orders_by_status_for_role] No orderby set, defaulting to ID.');
 				$orderby = 'ID';
 			}
 
