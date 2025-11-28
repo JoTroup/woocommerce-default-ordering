@@ -297,9 +297,68 @@ class wdo_Backend {
 				// Get all roles from WordPress
 				global $wp_roles;
 				$roles = $wp_roles->roles;
+				$included_roles = [];
 
 				// Display roles as a dropdown
 				?>
+
+				<style>
+					#included_roles, #excluded_roles {
+						border: 1px solid #ccc;
+						padding: 10px;
+						min-height: 100px;
+						width: 45%;
+						display: inline-block;
+						vertical-align: top;
+					}
+					#included_roles li, #excluded_roles li {
+						list-style: none;
+						margin: 5px 0;
+						padding: 5px;
+						background: #f1f1f1;
+						cursor: move;
+					}
+				</style>
+				<div>
+					<p><?php esc_html_e('Included Statuses', $this->plugin->config["textDomain"]); ?></p>
+					<ul id="included_roles" class="connectedSortable">
+						<?php foreach ($roles as $role): ?>
+							<li data-status="<?php echo esc_attr($status); ?>"><?php echo esc_html($roles[$role]); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<!-- <div>
+					<p><?php esc_html_e('Excluded Statuses', $this->plugin->config["textDomain"]); ?></p>
+					<ul id="excluded_roles" class="connectedSortable">
+						<?php foreach ($included_roles as $role): ?>
+							<?php if (isset($included_roles[$role])): ?>
+								<li data-status="<?php echo esc_attr($roles); ?>"><?php echo esc_html($included_roles[$role]); ?></li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<input type="hidden" name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_filterStatus]" id="admin_filterStatus" value="<?php echo esc_attr(json_encode($excluded_statuses)); ?>" />
+				<script>
+					(function($) {
+						$(document).ready(function() {
+							// Ensure sortable functionality is initialized
+							$('#included_roles, #excluded_roles').sortable({
+								connectWith: '.connectedSortable',
+								placeholder: 'ui-state-highlight',
+								update: function() {
+									const excluded = [];
+									$('#excluded_statuses li').each(function() {
+										excluded.push($(this).data('status'));
+									});
+									$('#admin_filterStatus').val(JSON.stringify(excluded));
+								}
+							}).addClass('connectedSortable');
+						});
+					})(jQuery);
+				</script> -->
+
+
+
 				<select name="<?php echo esc_attr($this->plugin->setPrefix("options")); ?>[admin_appliedtorole]" id="admin_appliedtorole">
 					<?php foreach ($roles as $role_key => $role_data): ?>
 						<option value="<?php echo esc_attr($role_key); ?>" <?php selected($value, $role_key); ?>>
@@ -404,7 +463,10 @@ class wdo_Backend {
 			if (!in_array($applied_role, $current_user->roles, true)) {
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
+<<<<<<< Updated upstream
+		}
 
+=======
 			if (isset($options['admin_orderby_custom'])) {
 				$orderby = $options['admin_orderby_custom'];
 			} elseif (isset($options['admin_orderby'])) {
@@ -414,6 +476,7 @@ class wdo_Backend {
 			}
 			$query_args['orderby'] = $orderby;
 			$query_args['order'] = 'ASC';
+>>>>>>> Stashed changes
 
 			// Filter orders by excluded statuses
 			if (!empty($options['admin_filterStatus'])) {
