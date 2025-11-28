@@ -405,7 +405,7 @@ class wdo_Backend {
 
 			// Check if the current user has the selected role
 			if (!in_array($applied_role, $current_user->roles, true)) {
-				$this->plugin->debug('[hide_orders_by_status_for_role] Current user role does not match applied role. Skipping filter.');
+				error_log('[hide_orders_by_status_for_role] Current user role does not match applied role. Skipping filter.');
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
 
