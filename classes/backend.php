@@ -405,10 +405,7 @@ class wdo_Backend {
 			if (!in_array($applied_role, $current_user->roles, true)) {
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
-<<<<<<< Updated upstream
-		}
 
-=======
 			if (isset($options['admin_orderby_custom'])) {
 				$orderby = $options['admin_orderby_custom'];
 			} elseif (isset($options['admin_orderby'])) {
@@ -416,9 +413,9 @@ class wdo_Backend {
 			} else {
 				$orderby = 'ID';
 			}
+			
 			$query_args['orderby'] = $orderby;
 			$query_args['order'] = 'ASC';
->>>>>>> Stashed changes
 
 			// Filter orders by excluded statuses
 			if (!empty($options['admin_filterStatus'])) {
