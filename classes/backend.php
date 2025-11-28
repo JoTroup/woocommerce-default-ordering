@@ -437,6 +437,7 @@ class wdo_Backend {
 			}
 		}
 		
+		error_log('[hide_orders_by_status_for_role] Final Query Args: ' . print_r($query_args, true));
 		return $query_args;
 	}
 
