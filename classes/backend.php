@@ -410,36 +410,11 @@ class wdo_Backend {
 			}
 
 			if (isset($options['admin_orderby_custom']) && !empty($options['admin_orderby_custom']) && $options['admin_orderby'] === 'custom') {
+				error_log('[hide_orders_by_status_for_role] Using custom orderby: ' . $options['admin_orderby_custom']);
 				$orderby = $options['admin_orderby_custom'];
-				$query_args['orderby'] = 'none'; // disables WP_Query's default orderby
-			
-				// LEFT JOIN for the meta key
-				add_filter('posts_join', function($join, $query) use ($orderby) {
-					global $wpdb;
-					if (
-						is_admin() &&
-						$query->get('post_type') === 'shop_order' &&
-						$query->is_main_query()
-					) {
-						if (strpos($join, 'pm_custom') === false) {
-							$join .= " LEFT JOIN {$wpdb->postmeta} AS pm_custom ON {$wpdb->posts}.ID = pm_custom.post_id AND pm_custom.meta_key = '" . esc_sql($orderby) . "'";
-						}
-					}
-					return $join;
-				}, 20, 2);
-			
-				// ORDER BY for meta_value with NULLs first
-				add_filter('posts_orderby', function($orderby_sql, $query) {
-					if (
-						is_admin() &&
-						$query->get('post_type') === 'shop_order' &&
-						$query->is_main_query()
-					) {
-						return "(pm_custom.meta_value IS NULL OR pm_custom.meta_value = '') ASC, pm_custom.meta_value ASC";
-					}
-					return $orderby_sql;
-				}, 20, 2);
-			 elseif (isset($options['admin_orderby'])) {
+				$query_args['orderby'] = $orderby; // disables WP_Query's default orderby
+				$query_args['order'] = 'ASC';
+			} elseif (isset($options['admin_orderby'])) {
 				error_log('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
 				$query_args['orderby'] = $orderby;
