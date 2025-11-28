@@ -409,19 +409,33 @@ class wdo_Backend {
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
 
-			if (isset($options['admin_orderby_custom']) && !empty($options['admin_orderby_custom']) && $options['admin_orderby'] === 'custom') {
+			if (
+				isset($options['admin_orderby_custom']) &&
+				!empty($options['admin_orderby_custom']) &&
+				$options['admin_orderby'] === 'custom'
+			) {
 				$orderby = $options['admin_orderby_custom'];
-				$query_args['meta_key'] = $orderby;
-				$query_args['orderby'] = 'meta_value'; // or 'meta_value_num' if numeric
+				// DO NOT set $query_args['meta_key']
+				$query_args['orderby'] = 'none'; // We'll handle ordering manually
 			
-				// DO NOT add a meta_query for $orderby
-			
-				add_filter('posts_clauses', function($clauses) use ($orderby) {
-					if (strpos($clauses['orderby'], 'meta_value') !== false) {
-						$clauses['orderby'] = "ORDER BY (pm.meta_value IS NULL OR pm.meta_value = '') ASC, pm.meta_value ASC";
+				// Add LEFT JOIN for the meta key
+				add_filter('posts_join', function($join, $query) use ($orderby) {
+					global $wpdb;
+					// Only add join for shop_order post type in admin
+					if (is_admin() && $query->get('post_type') === 'shop_order') {
+						$join .= " LEFT JOIN {$wpdb->postmeta} AS pm_custom ON {$wpdb->posts}.ID = pm_custom.post_id AND pm_custom.meta_key = '" . esc_sql($orderby) . "'";
 					}
-					return $clauses;
-				}, 20, 1);
+					return $join;
+				}, 20, 2);
+			
+				// Add ORDER BY for meta_value with NULLs first
+				add_filter('posts_orderby', function($orderby_sql, $query) use ($orderby) {
+					global $wpdb;
+					if (is_admin() && $query->get('post_type') === 'shop_order') {
+						return "(pm_custom.meta_value IS NULL OR pm_custom.meta_value = '') ASC, pm_custom.meta_value ASC";
+					}
+					return $orderby_sql;
+				}, 20, 2);
 			} elseif (isset($options['admin_orderby'])) {
 				error_log('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
