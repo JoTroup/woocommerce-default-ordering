@@ -444,7 +444,7 @@ class wdo_Backend {
 			
 
 			// Filter orders by excluded statuses
-			if (!empty($options['admin_filterStatus'])) {
+			/* if (!empty($options['admin_filterStatus'])) {
 				// Decode JSON or cast to array to ensure valid data
 				$excluded_statuses = is_string($options['admin_filterStatus']) 
 					? json_decode($options['admin_filterStatus'], true) 
@@ -454,7 +454,7 @@ class wdo_Backend {
 					$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
 					$query_args['status'] = array_diff($all_statuses, $excluded_statuses); // Ensure valid keys
 				}
-			}
+			} */
 		}
 		
 		error_log('[hide_orders_by_status_for_role] Final Query Args: ' . print_r($query_args, true));
