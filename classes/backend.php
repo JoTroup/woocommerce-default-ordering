@@ -414,15 +414,14 @@ class wdo_Backend {
 				$query_args['meta_key'] = $orderby;
 				$query_args['orderby'] = 'meta_value'; // or 'meta_value_num' if numeric
 			
-				// Add filter to adjust ORDER BY so NULLs appear first
+				// DO NOT add a meta_query for $orderby
+			
 				add_filter('posts_clauses', function($clauses) use ($orderby) {
 					if (strpos($clauses['orderby'], 'meta_value') !== false) {
-						// NULLs or empty values first, then by meta_value ASC
 						$clauses['orderby'] = "ORDER BY (pm.meta_value IS NULL OR pm.meta_value = '') ASC, pm.meta_value ASC";
 					}
 					return $clauses;
 				}, 20, 1);
-
 			} elseif (isset($options['admin_orderby'])) {
 				error_log('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
