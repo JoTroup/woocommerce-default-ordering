@@ -398,22 +398,28 @@ class wdo_Backend {
 		$options = get_option($this->plugin->setPrefix("options"), []);
 		// Check if 'admin_appliedtorole' is set and apply filter for the selected role
 		if (!empty($options['admin_appliedtorole'])) {
+
+
 			$current_user = wp_get_current_user();
 			$applied_role = $options['admin_appliedtorole'];
 
 			// Check if the current user has the selected role
 			if (!in_array($applied_role, $current_user->roles, true)) {
+				$this->plugin->debug('[hide_orders_by_status_for_role] Current user role does not match applied role. Skipping filter.');
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
 
 			if (isset($options['admin_orderby_custom'])) {
+				$this->plugin->debug('[hide_orders_by_status_for_role] Using custom orderby: ' . $options['admin_orderby_custom']);
 				$orderby = $options['admin_orderby_custom'];
 			} elseif (isset($options['admin_orderby'])) {
+				$this->plugin->debug('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
 			} else {
+				$this->plugin->debug('[hide_orders_by_status_for_role] No orderby set, defaulting to ID.');
 				$orderby = 'ID';
 			}
-			
+
 			$query_args['orderby'] = $orderby;
 			$query_args['order'] = 'ASC';
 
