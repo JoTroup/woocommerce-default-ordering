@@ -409,7 +409,7 @@ class wdo_Backend {
 				return $query_args; // Skip applying the filter if the role doesn't match
 			}
 
-			if (isset($options['admin_orderby_custom'])) {
+			if (isset($options['admin_orderby_custom']) && !empty($options['admin_orderby_custom']) && $options['admin_orderby'] === 'custom') {
 				error_log('[hide_orders_by_status_for_role] Using custom orderby: ' . $options['admin_orderby_custom']);
 				$orderby = $options['admin_orderby_custom'];
 			} elseif (isset($options['admin_orderby'])) {
