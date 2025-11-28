@@ -413,23 +413,33 @@ class wdo_Backend {
 				$orderby = $options['admin_orderby_custom'];
 				$query_args['orderby'] = 'none'; // disables WP_Query's default orderby
 			
-				// Add LEFT JOIN for the meta key
+				// LEFT JOIN for the meta key
 				add_filter('posts_join', function($join, $query) use ($orderby) {
 					global $wpdb;
-					if (is_admin() && $query->get('post_type') === 'shop_order' && $query->is_main_query()) {
-						$join .= " LEFT JOIN {$wpdb->postmeta} AS pm_custom ON {$wpdb->posts}.ID = pm_custom.post_id AND pm_custom.meta_key = '" . esc_sql($orderby) . "'";
+					if (
+						is_admin() &&
+						$query->get('post_type') === 'shop_order' &&
+						$query->is_main_query()
+					) {
+						if (strpos($join, 'pm_custom') === false) {
+							$join .= " LEFT JOIN {$wpdb->postmeta} AS pm_custom ON {$wpdb->posts}.ID = pm_custom.post_id AND pm_custom.meta_key = '" . esc_sql($orderby) . "'";
+						}
 					}
 					return $join;
 				}, 20, 2);
 			
-				// Add ORDER BY for meta_value with NULLs first
+				// ORDER BY for meta_value with NULLs first
 				add_filter('posts_orderby', function($orderby_sql, $query) {
-					if (is_admin() && $query->get('post_type') === 'shop_order' && $query->is_main_query()) {
+					if (
+						is_admin() &&
+						$query->get('post_type') === 'shop_order' &&
+						$query->is_main_query()
+					) {
 						return "(pm_custom.meta_value IS NULL OR pm_custom.meta_value = '') ASC, pm_custom.meta_value ASC";
 					}
 					return $orderby_sql;
 				}, 20, 2);
-			} elseif (isset($options['admin_orderby'])) {
+			 elseif (isset($options['admin_orderby'])) {
 				error_log('[hide_orders_by_status_for_role] Using orderby: ' . $options['admin_orderby']);
 				$orderby = $options['admin_orderby'];
 				$query_args['orderby'] = $orderby;
@@ -444,7 +454,7 @@ class wdo_Backend {
 			
 
 			// Filter orders by excluded statuses
-			/* if (!empty($options['admin_filterStatus'])) {
+			if (!empty($options['admin_filterStatus'])) {
 				// Decode JSON or cast to array to ensure valid data
 				$excluded_statuses = is_string($options['admin_filterStatus']) 
 					? json_decode($options['admin_filterStatus'], true) 
@@ -454,7 +464,7 @@ class wdo_Backend {
 					$all_statuses = array_keys(wc_get_order_statuses()); // Get only the keys (status slugs)
 					$query_args['status'] = array_diff($all_statuses, $excluded_statuses); // Ensure valid keys
 				}
-			} */
+			}
 		}
 		
 		error_log('[hide_orders_by_status_for_role] Final Query Args: ' . print_r($query_args, true));
